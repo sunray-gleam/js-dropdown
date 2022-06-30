@@ -52,7 +52,6 @@ const selectNode = (nodesMap, nodeId, selectType = enums.SelectTypes.Default) =>
     : selectType
   const isSelect = computedSelectType === enums.SelectTypes.Select
 
-  console.log(isSelect)
   node.isAllSelected = isSelect
   node.isAnySelected = isSelect
   node.children?.forEach(x => selectNode(nodesMap, x, computedSelectType))

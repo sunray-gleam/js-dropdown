@@ -8,7 +8,30 @@ const sublistToggleClickHandler = (clickedElement) => {
 const labelContainerClickHandler = (clickedElement, dropdown) => {
   dropdown.selectValue(clickedElement.id)
 
-  if (!dropdown.isMultiple) {
+  if (dropdown.isMultiple) {
+    const affectedListItem = clickedElement.parentElement
+    const affectedChildNodes = affectedListItem.querySelectorAll('.dropdown__item-label-container')
+    affectedChildNodes.forEach(node => {
+      const checkbox = node.querySelector('.dropdown__item-label-container > .dropdown__checkbox')
+      const { isAllSelected, isAnySelected } = dropdown.nodesMap.get(node.id)
+
+      isAllSelected ? checkbox.classList.add('dropdown__checkbox--checked') : checkbox.classList.remove('dropdown__checkbox--checked')
+      isAnySelected ? checkbox.classList.add('dropdown__checkbox--partially-checked') : checkbox.classList.remove('dropdown__checkbox--partially-checked')
+    })
+
+    let parentListItem = affectedListItem.parentElement.parentElement
+
+    while (parentListItem.tagName === 'LI') {
+      const subTitle = parentListItem.querySelector('.dropdown__list-item > .dropdown__item-label-container')
+      const checkbox = subTitle.querySelector('.dropdown__item-label-container > .dropdown__checkbox')
+      const { isAllSelected, isAnySelected } = dropdown.nodesMap.get(subTitle.id)
+
+      isAllSelected ? checkbox.classList.add('dropdown__checkbox--checked') : checkbox.classList.remove('dropdown__checkbox--checked')
+      isAnySelected ? checkbox.classList.add('dropdown__checkbox--partially-checked') : checkbox.classList.remove('dropdown__checkbox--partially-checked')
+      
+      parentListItem = parentListItem.parentElement.parentElement
+    }
+  } else {
     dropdown.closeDropdown()
   }
 }
@@ -47,16 +70,4 @@ export default function (e, dropdown) {
   }
 
   dropdown.closeDropdown()
-  // console.log(e.target)
-  // if (this.optionsListElement.contains(e.target)) {
-  //   const affectedNode = e.path.find(({ classList, tagName }) =>
-  //     classList.contains(listItemClass) && tagName.toLowerCase() == listItemTag)
-
-  //   this.selectValue(affectedNode.id)
-  //   this.closeDropdown()
-  // } else {
-  //   if (!root.contains(e.target)) {
-  //     this.closeDropdown()
-  //   }
-  // }
 }

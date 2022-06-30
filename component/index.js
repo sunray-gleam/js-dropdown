@@ -102,23 +102,45 @@ export default class Dropdown {
       const listItem = createElement(listItemTag, listItemClass)
       listElement.appendChild(listItem)
       const subTitle = createTextElement('dropdown__item-label-container', null, option.id)
+      subTitle.style.paddingLeft = `${depthLevel * 20}px`
       subTitle.dataset.type = enums.ElementTypes.LabelContainer
       listItem.appendChild(subTitle)
       const itemLabel = createTextElement('dropdown__item-label', option.value)
 
       if (option.children?.length) {
         const subList = createElement('ul', 'dropdown__options-sublist')
-        subList.style.marginLeft = `${depthLevel * 20}px`
         const subListArrow = createTextElement('dropdown__list-item-arrow dropdown__arrow', arrow)
         subListArrow.dataset.type = enums.ElementTypes.SublistToggle
         subTitle.appendChild(subListArrow)
+
+        if (this.isMultiple) {
+          this.appendCheckbox(subTitle, option)
+        }
+
         subTitle.appendChild(itemLabel)
         listItem.appendChild(subList)
         this.createOptionElements(option.children, depthLevel + 1, subList)
       } else {
+        if (this.isMultiple) {
+          this.appendCheckbox(subTitle, option)
+        }
+
         subTitle.appendChild(itemLabel)
       }
     }
+  }
+
+  appendCheckbox (subTitle, option) {
+    const subListCheckbox = createTextElement('dropdown__checkbox')
+    const node = this.nodesMap.get(option.id.toString())
+    
+    if (node.isAllSelected) {
+      subListCheckbox.classList.add('dropdown__checkbox--checked')
+    } else if (node.isAnySelected) {
+      subListCheckbox.classList.add('dropdown__checkbox--partially-checked')
+    }
+  
+    subTitle.appendChild(subListCheckbox)
   }
 
   selectValue (value) {

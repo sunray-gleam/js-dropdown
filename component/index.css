@@ -67,3 +67,22 @@
 .dropdown__list-item--expanded > .dropdown__item-label-container > .dropdown__list-item-arrow {
   transform: rotate(180deg);
 }
+
+.dropdown__checkbox {
+  color: #00ae42;
+  width: 20px;
+  height: 20px;
+  text-align: center;
+  padding: 4px;
+  border-radius: 4px;
+  border: 1px solid black;
+  display: inline-block;
+}
+
+.dropdown__checkbox--partially-checked::before {
+  content: '•'
+}
+
+.dropdown__checkbox--checked::before {
+  content: '✓'
+}
