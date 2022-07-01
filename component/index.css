@@ -41,12 +41,15 @@
   position: absolute;
   list-style-type: none;
   overflow: hidden;
+  overflow-y: auto;
+  font-size: 14px;
 }
 
 .dropdown__item-label-container {
   background-color: #ffffff;
   cursor: default;
-  display: block;
+  display: flex;
+  align-items: center;
 }
 
 .dropdown__item-label-container:hover {
@@ -70,8 +73,8 @@
 
 .dropdown__checkbox {
   color: #00ae42;
-  width: 20px;
-  height: 20px;
+  width: 15px;
+  height: 15px;
   text-align: center;
   padding: 4px;
   border-radius: 4px;

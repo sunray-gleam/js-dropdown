@@ -32,8 +32,11 @@ document.addEventListener('DOMContentLoaded', () => {
     ],
     id: 'id',
     value: 1,
-    isMultiple: true
+    isMultiple: true,
   })
+
+  const dropdownElement = document.getElementById('id')
+  dropdownElement.addEventListener('close', (e) => console.log('close', e.detail))
 
   console.log(dropdown)
 })

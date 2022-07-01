@@ -50,17 +50,21 @@ export default class Dropdown {
     options, // Array
     id, // Number | String
     value, // Number | String | Array<Number | String>
-    isMultiple
+    isMultiple,
+    maxHeight
   }) {
     this.options = options
     this.id = id
     this.value = value
     this.isExpanded = false
     this.isMultiple = isMultiple
+    this.maxHeight = maxHeight ?? 600
 
     if (isMultiple) {
       this.nodesMap = buildNodesMap(options, value)
     }
+
+
 
     this.mount()
   }
@@ -73,6 +77,14 @@ export default class Dropdown {
 
       return existingNode?.value ?? '__Nothing is Selected'
     }
+  }
+
+  get eventNameParamsMap () {
+    return new Map([
+      [enums.EventNames.Open, {}],
+      [enums.EventNames.Select, this.value],
+      [enums.EventNames.Close, this.value]
+    ])
   }
 
   mount () {
@@ -90,6 +102,7 @@ export default class Dropdown {
 
     this.optionsListElement = createElement('ul', 'dropdown__options-list')
     this.optionsListElement.style.display = 'none'
+    this.optionsListElement.style.maxHeight = `${this.maxHeight}px`
     document.body.appendChild(this.optionsListElement)
     
     this.createOptionElements(this.options, 0, this.optionsListElement)
@@ -146,11 +159,13 @@ export default class Dropdown {
   selectValue (value) {
     if (this.isMultiple) {
       selectNode(this.nodesMap, value)
+      this.value = getSelectedValues(this.nodesMap)
     } else {
       this.value = value
     }
 
     this.selectedValueElement.textContent = this.selectedValue
+    this.emit(enums.EventNames.Select)
   }
 
   closeDropdown () {
@@ -160,5 +175,12 @@ export default class Dropdown {
 
     this.isExpanded = false
     this.optionsListElement.style.display = 'none'
+    this.emit(enums.EventNames.Close)
+  }
+
+  emit (eventName) {
+    const params = this.eventNameParamsMap.get(eventName)
+    const event = new CustomEvent(eventName, { detail: params })
+    this.root.dispatchEvent(event)
   }
 }

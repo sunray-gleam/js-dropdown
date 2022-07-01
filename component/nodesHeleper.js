@@ -28,7 +28,6 @@ const dfs = (node, values, resultMap, parentNodeId = null) => {
   return nodeModel
 }
 
-// isAllSelected, isAnySelected, children, parent
 const buildNodesMap = (options, value) => {
   const arrayValue = typeof(value) === Array
     ? value

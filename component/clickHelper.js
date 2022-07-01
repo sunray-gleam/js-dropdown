@@ -41,6 +41,7 @@ const rootClickHandler = (clickedElement, dropdown) => {
 
   if (!dropdown.isExpanded) {
     dropdown.isExpanded = true
+    dropdown.emit(enums.EventNames.Open)
     const rootRect = clickedElement.getBoundingClientRect()
     const listStyle = dropdown.optionsListElement.style
     listStyle.display = 'block'
