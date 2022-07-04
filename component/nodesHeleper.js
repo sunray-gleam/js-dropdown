@@ -1,3 +1,4 @@
+import constants from './constants.js'
 import enums from './enums.js'
 
 const dfs = (node, values, resultMap, parentNodeId = null) => {
@@ -11,7 +12,8 @@ const dfs = (node, values, resultMap, parentNodeId = null) => {
       isAnySelected: nodeModels.some(x => x.isAnySelected),
       isAllSelected: nodeModels.every(x => x.isAllSelected),
       children: node.children.map(x => x.id.toString()),
-      parent: parentNodeId?.toString()
+      parent: parentNodeId?.toString(),
+      value: node.value
     }
   } else {
     const isSelected = values.includes(node.id)
@@ -19,7 +21,8 @@ const dfs = (node, values, resultMap, parentNodeId = null) => {
       id: node.id,
       isAllSelected: isSelected,
       isAnySelected: isSelected,
-      parent: parentNodeId?.toString()
+      parent: parentNodeId?.toString(),
+      value: node.value
     }
   }
 
@@ -35,9 +38,11 @@ const buildNodesMap = (options, value) => {
 
   const result = new Map()
 
-  for (const option of options) {
-    dfs(option, arrayValue, result)
+  const rootOption = {
+    id: constants.dropdownUniqueId,
+    children: options
   }
+  dfs(rootOption, arrayValue, result)
 
   return result
 }
@@ -67,7 +72,7 @@ const updateParentSelectionStatus = (nodesMap, nodeId) => {
   node.isAllSelected = node.children.every(childId => nodesMap.get(childId).isAllSelected)
 }
 
-const getSelectedValues = (nodesMap) => {
+const getSelectedIds = (nodesMap) => {
   const nodes = Array.from(nodesMap.values())
 
   return nodes
@@ -75,4 +80,22 @@ const getSelectedValues = (nodesMap) => {
     .map(x => x.id)
 }
 
-export { buildNodesMap, selectNode, getSelectedValues }
+const getSelectedValuesByParentPriority = (nodesMap, nodeId = constants.dropdownUniqueId) => {
+  const node = nodesMap.get(nodeId)
+
+  if (nodeId !== constants.dropdownUniqueId && node.isAllSelected) {
+    return [node.value]
+  }
+
+  const result = []
+  const children = node.children ?? []
+
+  for (const childId of children) {
+    const nodeSelectedValues = getSelectedValuesByParentPriority(nodesMap, childId)
+    result.push(...nodeSelectedValues)
+  }
+
+  return result
+}
+
+export { buildNodesMap, selectNode, getSelectedIds, getSelectedValuesByParentPriority }

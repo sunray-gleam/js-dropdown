@@ -13,6 +13,10 @@
   text-align: center;
 }
 
+.dropdown__arrow::before {
+  content: '▲';
+}
+
 .dropdown__header-arrow {
   transform: rotate(180deg);
 }

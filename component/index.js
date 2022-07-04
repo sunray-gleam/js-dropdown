@@ -1,10 +1,7 @@
 import clickHandler from './clickHelper.js'
 import enums from './enums.js'
-import { buildNodesMap, getSelectedValues, selectNode } from './nodesHeleper.js'
-
-const arrow = '▲'
-const listItemClass = 'dropdown__list-item'
-const listItemTag = 'li'
+import constants from './constants.js'
+import { buildNodesMap, getSelectedIds, selectNode, getSelectedValuesByParentPriority } from './nodesHeleper.js'
 
 
 const createElement = (tag, className, id = null) => {
@@ -47,9 +44,9 @@ const dfsId = (options, value) => {
 
 export default class Dropdown {
   constructor ({
-    options, // Array
-    id, // Number | String
-    value, // Number | String | Array<Number | String>
+    options,
+    id,
+    value,
     isMultiple,
     maxHeight
   }) {
@@ -58,24 +55,22 @@ export default class Dropdown {
     this.value = value
     this.isExpanded = false
     this.isMultiple = isMultiple
-    this.maxHeight = maxHeight ?? 600
+    this.maxHeight = maxHeight ?? constants.defaultMaxWidth
 
     if (isMultiple) {
       this.nodesMap = buildNodesMap(options, value)
     }
-
-
 
     this.mount()
   }
 
   get selectedValue () {
     if (this.isMultiple) {
-      return getSelectedValues(this.nodesMap)
+      return getSelectedValuesByParentPriority(this.nodesMap)
     } else {
       const existingNode = dfsId(this.options, this.value)
 
-      return existingNode?.value ?? '__Nothing is Selected'
+      return existingNode?.value ?? constants.texts.nothingIsSelected
     }
   }
 
@@ -90,17 +85,17 @@ export default class Dropdown {
   mount () {
     const root = document.getElementById(this.id)
     this.root = root
-    root.className = 'dropdown'
+    root.className = constants.classes.root
     root.dataset.type = enums.ElementTypes.Root
     root.innerHTML = ''
 
-    this.selectedValueElement = createTextElement('dropdown__header-text', this.selectedValue)
+    this.selectedValueElement = createTextElement(constants.classes.headerText, this.selectedValue)
     root.appendChild(this.selectedValueElement)
 
-    this.arrowElement = createTextElement('dropdown__arrow dropdown__header-arrow', arrow)
+    this.arrowElement = createTextElement(`${constants.classes.arrow} ${constants.classes.headerArrow}`)
     root.appendChild(this.arrowElement)
 
-    this.optionsListElement = createElement('ul', 'dropdown__options-list')
+    this.optionsListElement = createElement('ul', constants.classes.optionsList)
     this.optionsListElement.style.display = 'none'
     this.optionsListElement.style.maxHeight = `${this.maxHeight}px`
     document.body.appendChild(this.optionsListElement)
@@ -112,17 +107,17 @@ export default class Dropdown {
 
   createOptionElements (options, depthLevel, listElement) {
     for (const option of options) {
-      const listItem = createElement(listItemTag, listItemClass)
+      const listItem = createElement('li', constants.classes.listItem)
       listElement.appendChild(listItem)
-      const subTitle = createTextElement('dropdown__item-label-container', null, option.id)
+      const subTitle = createTextElement(constants.classes.subTitle, null, option.id)
       subTitle.style.paddingLeft = `${depthLevel * 20}px`
       subTitle.dataset.type = enums.ElementTypes.LabelContainer
       listItem.appendChild(subTitle)
-      const itemLabel = createTextElement('dropdown__item-label', option.value)
+      const itemLabel = createTextElement(constants.classes.itemLabel, option.value)
 
       if (option.children?.length) {
-        const subList = createElement('ul', 'dropdown__options-sublist')
-        const subListArrow = createTextElement('dropdown__list-item-arrow dropdown__arrow', arrow)
+        const subList = createElement('ul', constants.classes.sublist)
+        const subListArrow = createTextElement(`${constants.classes.arrow} ${constants.classes.listItemArrow}`)
         subListArrow.dataset.type = enums.ElementTypes.SublistToggle
         subTitle.appendChild(subListArrow)
 
@@ -144,13 +139,13 @@ export default class Dropdown {
   }
 
   appendCheckbox (subTitle, option) {
-    const subListCheckbox = createTextElement('dropdown__checkbox')
+    const subListCheckbox = createTextElement(constants.classes.checkbox)
     const node = this.nodesMap.get(option.id.toString())
-    
+
     if (node.isAllSelected) {
-      subListCheckbox.classList.add('dropdown__checkbox--checked')
+      subListCheckbox.classList.add(constants.classes.checkboxChecked)
     } else if (node.isAnySelected) {
-      subListCheckbox.classList.add('dropdown__checkbox--partially-checked')
+      subListCheckbox.classList.add(constants.classes.checkboxPartiallyChecked)
     }
   
     subTitle.appendChild(subListCheckbox)
@@ -159,7 +154,7 @@ export default class Dropdown {
   selectValue (value) {
     if (this.isMultiple) {
       selectNode(this.nodesMap, value)
-      this.value = getSelectedValues(this.nodesMap)
+      this.value = getSelectedIds(this.nodesMap)
     } else {
       this.value = value
     }
