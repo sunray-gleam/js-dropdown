@@ -2,6 +2,7 @@ export default {
   classes: {
     listItem: 'dropdown__list-item',
     listItemExpanded: 'dropdown__list-item--expanded',
+    listItemActive: 'dropdown__list-item--active',
     listItemArrow: 'dropdown__list-item-arrow',
     subTitle: 'dropdown__item-label-container',
     checkbox: 'dropdown__checkbox',

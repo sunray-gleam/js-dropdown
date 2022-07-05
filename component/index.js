@@ -2,7 +2,7 @@ import clickHandler from './clickHelper.js'
 import enums from './enums.js'
 import constants from './constants.js'
 import { buildNodesMap, getSelectedIds, selectNode, getSelectedValuesByParentPriority } from './nodesHeleper.js'
-
+import { rootEventHandler, mouseMoveHandler } from './keyboardHelper.js'
 
 const createElement = (tag, className, id = null) => {
   const element = document.createElement(tag)
@@ -88,6 +88,8 @@ export default class Dropdown {
     root.className = constants.classes.root
     root.dataset.type = enums.ElementTypes.Root
     root.innerHTML = ''
+    root.tabIndex = '0'
+    root.addEventListener('keydown', (e) => rootEventHandler(e, this))
 
     this.selectedValueElement = createTextElement(constants.classes.headerText, this.selectedValue)
     root.appendChild(this.selectedValueElement)
@@ -96,6 +98,7 @@ export default class Dropdown {
     root.appendChild(this.arrowElement)
 
     this.optionsListElement = createElement('ul', constants.classes.optionsList)
+    this.optionsListElement.addEventListener('mousemove', (e) => mouseMoveHandler(e, this))
     this.optionsListElement.style.display = 'none'
     this.optionsListElement.style.maxHeight = `${this.maxHeight}px`
     document.body.appendChild(this.optionsListElement)
@@ -107,9 +110,9 @@ export default class Dropdown {
 
   createOptionElements (options, depthLevel, listElement) {
     for (const option of options) {
-      const listItem = createElement('li', constants.classes.listItem)
+      const listItem = createElement('li', constants.classes.listItem, option.id)
       listElement.appendChild(listItem)
-      const subTitle = createTextElement(constants.classes.subTitle, null, option.id)
+      const subTitle = createTextElement(constants.classes.subTitle, null)
       subTitle.style.paddingLeft = `${depthLevel * 20}px`
       subTitle.dataset.type = enums.ElementTypes.LabelContainer
       listItem.appendChild(subTitle)
@@ -136,6 +139,8 @@ export default class Dropdown {
         subTitle.appendChild(itemLabel)
       }
     }
+
+    this.updateActiveElement(listElement.childNodes[0])
   }
 
   appendCheckbox (subTitle, option) {
@@ -163,19 +168,42 @@ export default class Dropdown {
     this.emit(enums.EventNames.Select)
   }
 
+  openDropdown () {
+    if (this.isExpanded) {
+      return
+    }
+
+    this.arrowElement.classList.toggle(constants.classes.headerArrowExpanded)
+    this.isExpanded = true
+    this.emit(enums.EventNames.Open)
+    const rootRect = this.root.getBoundingClientRect()
+    const listStyle = this.optionsListElement.style
+    listStyle.display = 'block'
+    listStyle.left = `${rootRect.left}px`
+    listStyle.top = `${rootRect.bottom}px`
+    listStyle.right = `${document.body.getBoundingClientRect().right - rootRect.right}px`
+  }
+
   closeDropdown () {
     if (!this.isExpanded) {
       return
     }
 
+    this.arrowElement.classList.toggle(constants.classes.headerArrowExpanded)
     this.isExpanded = false
-    this.optionsListElement.style.display = 'none'
     this.emit(enums.EventNames.Close)
+    this.optionsListElement.style.display = 'none'
   }
 
   emit (eventName) {
     const params = this.eventNameParamsMap.get(eventName)
     const event = new CustomEvent(eventName, { detail: params })
     this.root.dispatchEvent(event)
+  }
+
+  updateActiveElement (newActiveElement) {
+    this.activeElement?.classList?.toggle(constants.classes.listItemActive)
+    newActiveElement.classList.toggle(constants.classes.listItemActive)
+    this.activeElement = newActiveElement
   }
 }

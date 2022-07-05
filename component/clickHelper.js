@@ -7,14 +7,16 @@ const sublistToggleClickHandler = (clickedElement) => {
 }
 
 const labelContainerClickHandler = (clickedElement, dropdown) => {
-  dropdown.selectValue(clickedElement.id)
+  const affectedListItem = clickedElement.parentElement
+  dropdown.selectValue(affectedListItem.id)
 
   if (dropdown.isMultiple) {
-    const affectedListItem = clickedElement.parentElement
-    const affectedChildNodes = affectedListItem.querySelectorAll(`.${constants.classes.subTitle}`)
-    affectedChildNodes.forEach(node => {
-      const checkbox = node.querySelector(`.${constants.classes.subTitle} > .${constants.classes.checkbox}`)
-      const { isAllSelected, isAnySelected } = dropdown.nodesMap.get(node.id)
+    const affectedChildNodes = affectedListItem.querySelectorAll(`.${constants.classes.listItem}`)
+    const listItemNodes = [affectedListItem, ...affectedChildNodes]
+
+    listItemNodes.forEach(listItemNode => {
+      const checkbox = listItemNode.querySelector(`.${constants.classes.listItem} > .${constants.classes.subTitle} > .${constants.classes.checkbox}`)
+      const { isAllSelected, isAnySelected } = dropdown.nodesMap.get(listItemNode.id)
 
       isAllSelected ? checkbox.classList.add(constants.classes.checkboxChecked) : checkbox.classList.remove(constants.classes.checkboxChecked)
       isAnySelected ? checkbox.classList.add(constants.classes.checkboxPartiallyChecked) : checkbox.classList.remove(constants.classes.checkboxPartiallyChecked)
@@ -23,9 +25,8 @@ const labelContainerClickHandler = (clickedElement, dropdown) => {
     let parentListItem = affectedListItem.parentElement.parentElement
 
     while (parentListItem.tagName === 'LI') {
-      const subTitle = parentListItem.querySelector(`.${constants.classes.listItem} > .${constants.classes.subTitle}`)
-      const checkbox = subTitle.querySelector(`.${constants.classes.subTitle} > .${constants.classes.checkbox}`)
-      const { isAllSelected, isAnySelected } = dropdown.nodesMap.get(subTitle.id)
+      const checkbox = parentListItem.querySelector(`.${constants.classes.listItem} > .${constants.classes.subTitle} > .${constants.classes.checkbox}`)
+      const { isAllSelected, isAnySelected } = dropdown.nodesMap.get(parentListItem.id)
 
       isAllSelected ? checkbox.classList.add(constants.classes.checkboxChecked) : checkbox.classList.remove(constants.classes.checkboxChecked)
       isAnySelected ? checkbox.classList.add(constants.classes.checkboxPartiallyChecked) : checkbox.classList.remove(constants.classes.checkboxPartiallyChecked)
@@ -38,17 +39,8 @@ const labelContainerClickHandler = (clickedElement, dropdown) => {
 }
 
 const rootClickHandler = (clickedElement, dropdown) => {
-  dropdown.arrowElement.classList.toggle(constants.classes.headerArrowExpanded)
-
   if (!dropdown.isExpanded) {
-    dropdown.isExpanded = true
-    dropdown.emit(enums.EventNames.Open)
-    const rootRect = clickedElement.getBoundingClientRect()
-    const listStyle = dropdown.optionsListElement.style
-    listStyle.display = 'block'
-    listStyle.left = `${rootRect.left}px`
-    listStyle.top = `${rootRect.bottom}px`
-    listStyle.right = `${document.body.getBoundingClientRect().right - rootRect.right}px`
+    dropdown.openDropdown()
   } else {
     dropdown.closeDropdown()
   }
@@ -73,3 +65,5 @@ export default function (e, dropdown) {
 
   dropdown.closeDropdown()
 }
+
+export { labelContainerClickHandler }

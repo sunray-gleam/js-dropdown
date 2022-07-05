@@ -56,7 +56,7 @@
   align-items: center;
 }
 
-.dropdown__item-label-container:hover {
+.dropdown__list-item--active > .dropdown__item-label-container {
   filter: brightness(85%);
 }
 
