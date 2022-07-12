@@ -4,6 +4,80 @@ import constants from './constants.js'
 import { buildNodesMap, getSelectedIds, selectNode, getSelectedValuesByParentPriority } from './nodesHeleper.js'
 import { rootEventHandler, mouseMoveHandler } from './keyboardHelper.js'
 
+const validateOptions = (options) => {
+  return options.every(option => {
+    const areChildrenValid = option.children
+      ? validateOptions(option.children)
+      : true
+
+    return option.hasOwnProperty('id') && option.hasOwnProperty('value') && areChildrenValid
+  })
+}
+
+const dfsInOptions = (value, options) => {
+  if (options.some(x => x.id === value)) {
+    return true
+  }
+
+  return options.some(x => {
+    return x.children
+      ? dfsInOptions(value, x.children)
+      : false
+  })
+}
+
+const validateValue = (options, value) => {
+  if (value === null) {
+    return true
+  }
+
+  if (typeof(value) === 'array' || typeof(value) === 'string' || typeof(value) === 'number') {
+    const values = typeof(value) === 'array'
+      ? value
+      : [value]
+    
+    return values.every(x => dfsInOptions(x, options))    
+  } else {
+    return false
+  }
+}
+
+const validateMultiple = (value, isMultiple) => {
+  const isValueMultiple = typeof(value) === 'array'
+
+  if (!typeof(isMultiple) === 'boolean') {
+    return false
+  }
+
+  return isMultiple
+    ? true
+    : !isValueMultiple
+}
+
+const validateMaxHeight = (maxHeight) => {
+  return maxHeight
+    ? typeof(maxHeight) === 'number' && maxHeight > 0
+    : true
+}
+
+const validateId = (id) => {
+  return typeof(id) === 'number' || typeof(id) === 'string'
+}
+
+const validateProps = ({
+  options,
+  id,
+  value,
+  isMultiple,
+  maxHeight
+}) => {
+  return validateOptions(options) &&
+    validateValue(options, value) &&
+    validateMultiple(value, isMultiple) &&
+    validateMaxHeight(maxHeight) &&
+    validateId(id)
+}
+
 const createElement = (tag, className, id = null) => {
   const element = document.createElement(tag)
   element.className = className
@@ -43,13 +117,19 @@ const dfsId = (options, value) => {
 }
 
 export default class Dropdown {
-  constructor ({
-    options,
-    id,
-    value,
-    isMultiple,
-    maxHeight
-  }) {
+  constructor (props) {
+    if (!validateProps(props)) {
+      throw 'Invalid props!';
+    }
+
+    const {
+      options,
+      id,
+      value,
+      isMultiple,
+      maxHeight
+    } = props
+
     this.options = options
     this.id = id
     this.value = value
@@ -113,7 +193,7 @@ export default class Dropdown {
       const listItem = createElement('li', constants.classes.listItem, option.id)
       listElement.appendChild(listItem)
       const subTitle = createTextElement(constants.classes.subTitle, null)
-      subTitle.style.paddingLeft = `${depthLevel * 20}px`
+      subTitle.style.paddingLeft = `${depthLevel * 30}px`
       subTitle.dataset.type = enums.ElementTypes.LabelContainer
       listItem.appendChild(subTitle)
       const itemLabel = createTextElement(constants.classes.itemLabel, option.value)

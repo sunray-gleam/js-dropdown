@@ -2,7 +2,8 @@
   display: grid;
   align-items: center;
   grid-template-columns: 1fr 20px;
-  height: 20px;
+  line-height: 20px;
+  padding: 5px;
   border: 1px solid black;
   border-radius: 4px;
   cursor: pointer;
@@ -28,9 +29,12 @@
 .dropdown__list-item-arrow {
   cursor: pointer;
   width: 20px;
+  height: 20px;
+  font-size: 16px;
   text-align: center;
   display: inline-block;
   transform: rotate(90deg);
+  padding: 5px;
 }
 
 .dropdown__list-item-arrow:hover {
@@ -81,6 +85,7 @@
   height: 15px;
   text-align: center;
   padding: 4px;
+  margin: 2px 5px;
   border-radius: 4px;
   border: 1px solid black;
   display: inline-block;

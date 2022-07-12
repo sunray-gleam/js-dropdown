@@ -32,7 +32,7 @@ const dfs = (node, values, resultMap, parentNodeId = null) => {
 }
 
 const buildNodesMap = (options, value) => {
-  const arrayValue = typeof(value) === Array
+  const arrayValue = typeof(value) === 'array'
     ? value
     : [value]
 
