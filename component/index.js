@@ -128,7 +128,7 @@ export default class Dropdown {
       value,
       isMultiple,
       maxHeight,
-      nothingIsSelectedText
+      placeholderText
     } = props
 
     this.options = options
@@ -137,7 +137,7 @@ export default class Dropdown {
     this.isExpanded = false
     this.isMultiple = isMultiple
     this.maxHeight = maxHeight ?? constants.defaultMaxWidth
-    this.nothingIsSelectedText = nothingIsSelectedText ?? constants.texts.nothingIsSelected
+    this.placeholderText = placeholderText ?? constants.texts.nothingIsSelected
 
     if (isMultiple) {
       this.nodesMap = buildNodesMap(options, value)
@@ -152,7 +152,7 @@ export default class Dropdown {
     } else {
       const existingNode = dfsId(this.options, this.value)
 
-      return existingNode?.value ?? this.nothingIsSelectedText
+      return existingNode?.value ?? this.placeholderText
     }
   }
 

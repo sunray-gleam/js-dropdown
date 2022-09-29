@@ -58,6 +58,7 @@
   cursor: default;
   display: flex;
   align-items: center;
+  height: 30px;
 }
 
 .dropdown__list-item--active > .dropdown__item-label-container {
