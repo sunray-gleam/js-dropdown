@@ -195,7 +195,7 @@ export default class Dropdown {
       const listItem = createElement('li', constants.classes.listItem, option.id)
       listElement.appendChild(listItem)
       const subTitle = createTextElement(constants.classes.subTitle, null)
-      subTitle.style.paddingLeft = `${depthLevel * 30}px`
+      subTitle.style.paddingLeft = `${depthLevel * 30 + 5}px`
       subTitle.dataset.type = enums.ElementTypes.LabelContainer
       listItem.appendChild(subTitle)
       const itemLabel = createTextElement(constants.classes.itemLabel, option.value)

@@ -59,6 +59,7 @@
   display: flex;
   align-items: center;
   height: 30px;
+  padding-right: 5px;
 }
 
 .dropdown__list-item--active > .dropdown__item-label-container {
