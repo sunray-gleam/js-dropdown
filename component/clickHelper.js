@@ -1,6 +1,10 @@
 import constants from './constants.js'
 import enums from './enums.js'
 
+const getEntrylistId = (rootId) => {
+  return `${rootId}--list`
+}
+
 const sublistToggleClickHandler = (clickedElement) => {
   const affectedListItem = clickedElement.parentElement.parentElement
   affectedListItem.classList.toggle(constants.classes.listItemExpanded)
@@ -52,7 +56,25 @@ const elementTypeClickHandlersMap = new Map([
   [enums.ElementTypes.Root, rootClickHandler]
 ])
 
+const findEntryElement = (e) => {
+  for (const clickedElement of e.path) {
+    if (clickedElement.dataset?.type === enums.ElementTypes.Root || clickedElement.dataset?.type === enums.ElementTypes.EntryList) {
+      return clickedElement
+    }
+  }
+
+  return null
+}
+
 export default function (e, dropdown) {
+  const entry = findEntryElement(e)
+
+  if (entry?.id !== dropdown.id && entry?.id !== getEntrylistId(dropdown.id)) {
+    dropdown.closeDropdown()
+
+    return
+  }
+
   for (const clickedElement of e.path) {
     const clickHandler = elementTypeClickHandlersMap.get(clickedElement.dataset?.type)
 
@@ -66,4 +88,4 @@ export default function (e, dropdown) {
   dropdown.closeDropdown()
 }
 
-export { labelContainerClickHandler }
+export { labelContainerClickHandler, getEntrylistId }

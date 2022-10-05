@@ -1,4 +1,4 @@
-import clickHandler from './clickHelper.js'
+import clickHandler, { getEntrylistId } from './clickHelper.js'
 import enums from './enums.js'
 import constants from './constants.js'
 import { buildNodesMap, getSelectedIds, selectNode, getSelectedValuesByParentPriority } from './nodesHeleper.js'
@@ -179,7 +179,8 @@ export default class Dropdown {
     this.arrowElement = createTextElement(`${constants.classes.arrow} ${constants.classes.headerArrow}`)
     root.appendChild(this.arrowElement)
 
-    this.optionsListElement = createElement('ul', constants.classes.optionsList)
+    this.optionsListElement = createElement('ul', constants.classes.optionsList, getEntrylistId(this.id))
+    this.optionsListElement.dataset.type = enums.ElementTypes.EntryList
     this.optionsListElement.addEventListener('mousemove', (e) => mouseMoveHandler(e, this))
     this.optionsListElement.style.display = 'none'
     this.optionsListElement.style.maxHeight = `${this.maxHeight}px`
