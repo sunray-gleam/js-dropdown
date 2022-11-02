@@ -182,7 +182,8 @@ export default class Dropdown {
     this.optionsListElement = createElement('ul', constants.classes.optionsList, getEntrylistId(this.id))
     this.optionsListElement.dataset.type = enums.ElementTypes.EntryList
     this.optionsListElement.addEventListener('mousemove', (e) => mouseMoveHandler(e, this))
-    this.optionsListElement.style.display = 'none'
+    this.optionsListElement.style.opacity = '0'
+    this.optionsListElement.style.height = '0'
     this.optionsListElement.style.maxHeight = `${this.maxHeight}px`
     document.body.appendChild(this.optionsListElement)
     
@@ -260,8 +261,10 @@ export default class Dropdown {
     this.isExpanded = true
     this.emit(enums.EventNames.Open)
     const rootRect = this.root.getBoundingClientRect()
+    this.root.classList.toggle(constants.classes.rootOpen)
     const listStyle = this.optionsListElement.style
-    listStyle.display = 'block'
+    listStyle.opacity = 1
+    listStyle.height = 'auto'
     listStyle.left = `${rootRect.left}px`
     listStyle.top = `${rootRect.bottom}px`
     listStyle.right = `${document.body.getBoundingClientRect().right - rootRect.right}px`
@@ -272,10 +275,12 @@ export default class Dropdown {
       return
     }
 
+    this.root.classList.toggle(constants.classes.rootOpen)
     this.arrowElement.classList.toggle(constants.classes.headerArrowExpanded)
     this.isExpanded = false
     this.emit(enums.EventNames.Close)
-    this.optionsListElement.style.display = 'none'
+    this.optionsListElement.style.opacity = '0'
+    this.optionsListElement.style.height = '0'
   }
 
   emit (eventName) {

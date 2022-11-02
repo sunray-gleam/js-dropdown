@@ -15,7 +15,8 @@ export default {
     headerArrow: 'dropdown__header-arrow',
     optionsList: 'dropdown__options-list',
     itemLabel: 'dropdown__item-label',
-    sublist: 'dropdown__options-sublist'
+    sublist: 'dropdown__options-sublist',
+    rootOpen: 'dropdown--open'
   },
   texts: {
     nothingIsSelected: '__Nothing is Selected'
